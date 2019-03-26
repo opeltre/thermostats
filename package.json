@@ -1,0 +1,23 @@
+{
+  "name": "thermostat",
+  "version": "0.0.0",
+  "description": "thermodynamic statistics",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opeltre/thermostat.git"
+  },
+  "keywords": [
+    "statistics",
+    "geometry"
+  ],
+  "author": "Olivier Peltre",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/opeltre/thermostat/issues"
+  },
+  "homepage": "https://github.com/opeltre/thermostat#readme"
+}
