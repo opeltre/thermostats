@@ -8,15 +8,18 @@ Alg.map = f =>
         ? p.map(Alg.map(f))
         : f(p);
 
+Alg.mapN = f => 
+    (...ps) => Array.isArray(ps[0])
+        ? ps[0].map(
+            (_, i) => Alg.mapN(f)(...ps.map(p => p[i]))
+        )
+        : f(...ps);
+
 Alg.add = 
-    (p, q) => Array.isArray(p)
-        ? p.map((_, i) => Alg.add(p[i], q[i]))
-        : p + q;
+    Alg.mapN((x, y) => x + y);
 
 Alg.mult = 
-    (p, q) => Array.isArray(p)
-        ? p.map((_, i) => Alg.mult(p[i], q[i]))
-        : p * q;
+    Alg.mapN((x, y) => x * y);
 
 Alg.scale = 
     z => Alg.map(y => z * y);
@@ -28,6 +31,11 @@ Alg.mass =
     q => Array.isArray(q) 
         ? Alg.mass(q.reduce((x,y) => Alg.add(x,y)))
         : q;
+
+Alg.scalar = __.pipe(
+    Alg.mult,
+    Alg.mass
+);
 
 let marginal = 
     ([i, ...is], [j, ...js]) => 

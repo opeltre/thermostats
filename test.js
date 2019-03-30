@@ -2,7 +2,7 @@ let tmst = require('./index'),
     __ = require('./__');
 
 let B = 0.1,
-    J = 1,
+    J = -1,
     h_i = x => B * x,
     h_ij = (x, y) => - J * x * y;
 
@@ -14,7 +14,8 @@ let I = ['a','b','c'],
     },
     A = [
         ['a', 'b'],
-        ['b', 'c']
+        ['b', 'c'],
+        ['a', 'c']
     ],
     X = tmst.sys.closure([...A, ...I.map(i => [i])]),
     S = tmst.system(X, E);
@@ -38,20 +39,12 @@ let phi = tmst.nabla(H);
 
 
 // BP
-let orbit = [tmst.BP(H)]
-__.range(6).forEach(
-    _ => orbit.push(tmst.BP(orbit[__.log(orbit.length - 1)].H))
-);
-
-/*
-orbit.forEach(
-    (D, i) => {
-        __.logs('phi['+i+']: ')(D.phi.values)
-        __.logs('U['+i+']: ')(D.U.values)
-    //    __.logs('v['+i+']: ')(D.v.values)
-        __.log('\n -- \n')
-    }
-);
-*/
+let orbit = n => {
+    let orb = [tmst.BP(H)]
+    __.range(n).forEach(
+        _ => orb.push(tmst.BP(orb[orb.length - 1].H))
+    );
+    return orb;
+};
 
 module.exports = {S, h, H, phi, orbit};
