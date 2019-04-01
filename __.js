@@ -1,6 +1,7 @@
 /*** __ ***/
 
-let __ = {};
+let __ = 
+    f => xs => f(...xs);
 
 /////
 module.exports = __;
@@ -17,10 +18,6 @@ __.return =
 
 __.val = 
     (f, x) => typeof f === 'function' ? f(x) : f;
-
-__.X = 
-    f => 
-        X => f(...X);
 
 __.$ = 
     (...xs) => 

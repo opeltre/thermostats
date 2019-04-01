@@ -15,6 +15,17 @@ Alg.mapN = f =>
         )
         : f(...ps);
 
+// (b -> a -> b) -> Alg a -> b  
+Alg.reduce = f => 
+    p => Array.isArray(p)
+        ? p.reduce(
+            (pi, pj) => f(
+                Alg.reduce(f)(pi), 
+                Alg.reduce(f)(pj)
+            )
+        )
+        : p;
+
 Alg.add = 
     Alg.mapN((x, y) => x + y);
 
@@ -27,15 +38,31 @@ Alg.scale =
 Alg.subt = 
     (p, q) => Alg.add(p, Alg.scale(-1)(q));
 
-Alg.mass = 
-    q => Array.isArray(q) 
-        ? Alg.mass(q.reduce((x,y) => Alg.add(x,y)))
-        : q;
+let minus = 
+    (N, i) => (N - i) % N 
+
+Alg.reverse = 
+    p => Array.isArray(p) 
+        ? p.map(
+            (_, i) => p[minus(p.length, i)].map(Alg.reverse)
+        )
+        : p;
+
+Alg.mass = Alg.reduce(Alg.add);
+
+Alg.volume = 
+    u => Alg.shape(u).reduce(Alg.mult);
+
+Alg.mean = 
+    u => Alg.mass(u) / Alg.volume(u);
 
 Alg.scalar = __.pipe(
     Alg.mult,
     Alg.mass
 );
+
+Alg.norm = 
+    p => Math.sqrt(Alg.scalar(a, a));
 
 let marginal = 
     ([i, ...is], [j, ...js]) => 
@@ -63,6 +90,28 @@ let extend =
 Alg.extend = 
     (a, b, Es) => extend(...[a, b].map(Sys.region), Es);
 
+let compute = ([E, ...Es]) => 
+    f => typeof(E) === 'undefined'
+        ? f([])
+        : E.map(
+            x => Alg.compute(Es)(xs => f([x, ...xs]))
+        );
+
+Alg.compute = 
+    Es => compute(Es.map(E => Array.isArray(E) ? E : __.range(E)));
+
+/* array <--> lambda */
+
+Alg.shape = 
+    q => Array.isArray(q)
+        ? [q.length, ...Alg.shape(q[0])]
+        : [];
+
+Alg.call = q => 
+    (i, ...is) => typeof(i) === 'undefined'
+        ? q
+        : Alg.call(q[i])(...is)
+
 /* lambda */
 
 Alg.proj = (a, b) => 
@@ -74,24 +123,6 @@ Alg.proj = (a, b) =>
 Alg.ext = (a, b) =>
     f => (...xs) => f(...Alg.proj(a, b)(xs));
 
-/* array <--> lambda */
-
-Alg.compute = (E, ...Es) => 
-    f => typeof(E) === 'undefined'
-        ? f()
-        : E.map(
-            x => Alg.compute(...Es)((...xs) => f(x, ...xs))
-        );
-
-Alg.call = q => 
-    (i, ...is) => typeof(i) === 'undefined'
-        ? q
-        : Alg.call(q[i])(...is)
-
-Alg.shape = 
-    q => Array.isArray(q)
-        ? [q.length, ...Alg.shape(q[0])]
-        : [];
 
 /* prob */
 

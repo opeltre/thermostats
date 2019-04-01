@@ -42,7 +42,7 @@ function field (system, degree=0, values={}) {
     my.set = 
         (a, fa) => {
             my.values[id(a)] = typeof fa === 'function'
-                ? Alg.compute(...system.set(a))(fa)
+                ? Alg.compute(system.set(a))(fa)
                 : fa;
             return my;
         };

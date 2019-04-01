@@ -1,10 +1,10 @@
-let Alg = require('./alg');
+let Alg = require('./alg'),
+    __ = require('./__');
 
 let C = Alg.mapN(
-    (x, y) => ({
-        Re: x,
-        Im: y || 0
-    })
+    (x, y) => typeof x === 'number'
+        ? ({ Re: x, Im: y || 0 })
+        : x
 );
 
 C.i = C(0,1);
@@ -20,6 +20,11 @@ let bar =
 
 C.bar = Alg.map(bar);
 
+let minus = 
+    z => C(-Re(z), -Im(z));
+
+C.minus = Alg.map(minus);
+
 let add = 
     (a, b) => C(
         Re(a) + Re(b),
@@ -27,6 +32,9 @@ let add =
     );
 
 C.add = Alg.mapN(add);
+
+C.subt = 
+    (a, b) => C.add(a, C.minus(b));
         
 let mult = 
     (a, b) => C(
@@ -36,13 +44,8 @@ let mult =
 
 C.mult = Alg.mapN(mult);
 
-C.scalar = 
-    (a, b) => Alg.mass(
-        C.mult(C.bar(a), b)
-    );
-
 C.scale = 
-    t => Alg.map(z => mult(t, z));
+    t => Alg.map(z => mult(C(t), z))
 
 let abs = 
     z => Math.sqrt(Re(z)**2 + Im(z)**2);
@@ -57,6 +60,16 @@ let phase =
         : Math.atan(Im(z)/Re(z)) - (Re(z) > 0 ? 0 : sign(Im(z)) * Math.PI);
 
 C.phase = Alg.map(phase);
+
+C.mass = Alg.reduce(C.add);
+
+C.scalar = __.pipe(
+    (a, b) => C.mult(C.bar(a), b),
+    C.mass
+);
+
+C.norm = 
+    a => Math.sqrt(C.Re(C.scalar(a, a)));
 
 C.expi = 
     t => C(Math.cos(t), Math.sin(t));

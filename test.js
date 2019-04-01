@@ -23,10 +23,10 @@ let I = ['a','b','c'],
 // potential field
 let h = S.field();
 I.forEach(
-    i => h.set(i, h_i)
+    i => h.set(i, __(h_i))
 );
 A.forEach(
-    a => h.set([a], h_ij)
+    a => h.set([a], __(h_ij))
 );
 
 
@@ -46,5 +46,15 @@ let orbit = n => {
     );
     return orb;
 };
+
+let log = 
+    (D, i) => {
+        __.log(i);
+        __.logs('U:')(D.U.values);
+        __.logs('phi:')(D.phi.values);
+        __.log('\n- - -\n');
+    };
+
+orbit(12).forEach(log);
 
 module.exports = {S, h, H, phi, orbit};
