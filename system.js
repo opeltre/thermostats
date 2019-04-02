@@ -47,6 +47,28 @@ S.max =
         a => !as.filter(b => S.sub(a, b)).length
     );
 
+S.contains = 
+    (as, b) => as.filter(a => S.eq(a, b)).length > 0;
+
+S.append = 
+    (as, b) => S.contains(as, b)
+        ? as
+        : [...as, b];
+
+S.concat = 
+    (as, bs) => bs.reduce(
+        (cs, b) => S.append(cs, b),
+        S.filter(as)
+    );
+
+S.remove = 
+    (as, bs) => as.filter(a => !S.contains(bs, a));
+
+S.filter = 
+    ([a, ...as]) => a 
+        ? S.append(S.filter(as), a) 
+        : [];
+
 S.cone = 
     a => bs => bs.filter(b => S.sup(a, b));
 
@@ -103,24 +125,5 @@ S.closure =
             )
         ]
         : [];
-
-S.contains = 
-    (as, b) => as.filter(a => S.eq(a, b)).length > 0;
-
-S.append = 
-    (as, b) => S.contains(as, b)
-        ? as
-        : [...as, b];
-
-S.filter = 
-    ([a, ...as]) => a 
-        ? S.append(S.filter(as), a) 
-        : [];
-
-S.concat = 
-    (as, bs) => bs.reduce(
-        (cs, b) => S.append(cs, b),
-        S.filter(as)
-    );
 
 module.exports = S;

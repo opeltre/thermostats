@@ -2,13 +2,34 @@ let Sys = require('./system'),
     Alg = require('./alg'),
     __ = require('./__');
 
-let {id, chain, cell} = Sys;
+let {id, chain, cell, key, region} = Sys;
 
 function system (X, E) {
 
     let my = {
-        nerve: Sys.nerve(X) 
+        nerve: Sys.nerve(X),
+        cones: Sys.cones(X)
     };
+
+    my.cone = a => 
+        [region(a), ...my.cones[key(a)]]
+
+    let conediff = (a, b, c) => 
+        Sys.remove(my.cone(a), my.cone(b))
+            .filter(x => Sys.sup(x, c))
+
+    my.conediff = conediff;
+
+    let zetaChains = ([a, b, ...cs]) => b
+        ? zetaChains([b, ...cs])
+            .map(([y, ...zs]) => conediff(a, b, y)
+                .map(x => [x, y, ...zs])
+            )
+            .reduce((As, Bs) => [...As, ...Bs])
+        : my.cone(a)
+            .map(x => [x]);
+
+    my.zetaChains = __.pipe(chain, zetaChains);
 
     my.set = a => 
         cell(a).map(i => E[i]);
@@ -21,6 +42,8 @@ function system (X, E) {
 
     return my;
 }
+
+
 
 function field (system, degree=0, values={}) {
 

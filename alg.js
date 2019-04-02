@@ -8,6 +8,11 @@ Alg.map = f =>
         ? p.map(Alg.map(f))
         : f(p);
 
+Alg.map2 = f => 
+    (p, q) => Array.isArray(p)
+        ? p.map((_, i) => Alg.map2(f)(p[i], q[i]))
+        : f(p, q);
+
 Alg.mapN = f => 
     (...ps) => Array.isArray(ps[0])
         ? ps[0].map(
@@ -27,10 +32,10 @@ Alg.reduce = f =>
         : p;
 
 Alg.add = 
-    Alg.mapN((x, y) => x + y);
+    Alg.map2((x, y) => x + y);
 
 Alg.mult = 
-    Alg.mapN((x, y) => x * y);
+    Alg.map2((x, y) => x * y);
 
 Alg.scale = 
     z => Alg.map(y => z * y);

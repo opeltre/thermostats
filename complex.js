@@ -31,7 +31,7 @@ let add =
         Im(a) + Im(b)
     );
 
-C.add = Alg.mapN(add);
+C.add = Alg.map2(add);
 
 C.subt = 
     (a, b) => C.add(a, C.minus(b));
@@ -42,7 +42,7 @@ let mult =
         Re(a) * Im(b) + Im(a) * Re(b)
     );
 
-C.mult = Alg.mapN(mult);
+C.mult = Alg.map2(mult);
 
 C.scale = 
     t => Alg.map(z => mult(C(t), z))

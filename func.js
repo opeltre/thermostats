@@ -33,6 +33,14 @@ let div =
                 .scale((-1)**k)
         )
         .reduce((v, vk) => v.plus(vk));
+
+let Zeta = 
+    u => u.system.field(
+        u.degree,
+        a => u.system.zetaChains(a)            
+            .map(b => u.get(b, a))
+            .reduce(Alg.add)
+    );
             
 let exp_ = Alg.map(u => Math.exp(-u)),
     _ln = Alg.map(q => - Math.log(q)),
@@ -82,6 +90,7 @@ module.exports = Object.assign({}, {
     fmap,
     sum,
     zeta, diff, div,
+    Zeta,
     eff, nabla,
     BP
 });
