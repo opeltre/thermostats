@@ -1,11 +1,8 @@
-let alg = require('./alg'),
-    sys = require('./system'),
-    field = require('./field'),
-    func = require('./func'),
-    __ = require('./__');
+let sys = require('./src/system'),
+    field = require('./src/field'),
+    func = require('./src/func');
 
 let tmst = Object.assign(
-    {alg},
     {sys},
     field,
     func

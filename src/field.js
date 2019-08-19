@@ -1,6 +1,6 @@
-let Sys = require('./system'),
-    Alg = require('./alg'),
-    __ = require('./__');
+let __ = require('@opeltre/math'),
+    Alg = __.R,
+    Sys = require('./system');
 
 let {id, chain, cell, key, region} = Sys;
 

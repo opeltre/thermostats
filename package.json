@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/opeltre/thermostat/issues"
   },
-  "homepage": "https://github.com/opeltre/thermostat#readme"
+  "homepage": "https://github.com/opeltre/thermostat#readme",
+  "dependencies": {
+    "@opeltre/math": "0.0.3"
+  }
 }

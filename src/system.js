@@ -1,4 +1,4 @@
-let __ = require('./__');
+let __ = require('@opeltre/math');
 
 /* keys:
     let is =    [ 'i', 'j', 'k' ],

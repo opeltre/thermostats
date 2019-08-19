@@ -1,6 +1,6 @@
-let Alg = require('./alg'),
-    Sys = require('./system'),
-    __ = require('./__');
+let __ = require('@opeltre/math'),
+    Alg = __.R,
+    Sys = require('./system');
 
 let fmap = 
     F => u => 
@@ -34,18 +34,11 @@ let div =
         )
         .reduce((v, vk) => v.plus(vk));
 
-let Zeta = 
-    u => u.system.field(
-        u.degree,
-        a => u.system.zetaChains(a)            
-            .map(b => u.get(b, a))
-            .reduce(Alg.add)
-    );
-            
 let exp_ = Alg.map(u => Math.exp(-u)),
     _ln = Alg.map(q => - Math.log(q)),
     helmholtz = __.pipe(exp_, Alg.mass, _ln),
-    reduce = H => Alg.map(h => h - helmholtz(H))(H);
+    _lnp = H => Alg.map(h => h - helmholtz(H))(H),
+    gibbs = H => exp_(_lnp(H));
 
 let eff = 
     (a, b) => __.pipe(
@@ -54,7 +47,7 @@ let eff =
         _ln
     );
 
-let nabla = 
+let Deff = 
     U => U.system.nerve[1].reduce(
         (phi, [a, b]) => phi.set(
             [a, b], 
@@ -65,33 +58,58 @@ let nabla =
         U.system.field(1)
     );
 
+let _Deff = U => Deff(U).scale(-1);
+
+let Zeta = 
+    u => u.system.field(
+        u.degree,
+        a => u.system.zetaChains(a)            
+            .map(b => u.get(b, a))
+            .reduce(Alg.add)
+    );
+            
 let zeta = 
     u => u.system.nerve[1].reduce(
         (v, [a, b]) => v.add([a], u.get([b], [a])),
         u.system.field(0, u.values)
     );
 
-let BP = 
-    H => {
-        let U = fmap(reduce)(H);
-        let phi = nabla(U).scale(-1);
-        let v = div(phi);
-        return {
-            U, phi, v,
-            H: sum(U, zeta(v))
+// let moebius = 
+
+let Dh = __.pipe(zeta, _Deff, div);
+
+let phi = __.pipe(zeta, _Deff);
+
+let DH = __.pipe(_Deff, div, zeta); 
+
+
+let flow = (n, d) => 
+    x => {
+        let xs = [x];
+        for (i=0; i<n; i++) {
+            let x = xs[xs.length - 1];
+            xs.push( sum(x, d(x)) );
         };
-    };
+        return xs;
+    }
 
 module.exports = Object.assign({}, {
+    fmap,
+    diff, 
+    div,
+    sum,
+    zeta,     
+    Zeta,
     exp_ : fmap(exp_),
     _ln : fmap(_ln),
-    reduce : fmap(reduce),
+    _lnp : fmap(_lnp),
     helmholtz,
-    fmap,
-    sum,
-    zeta, diff, div,
-    Zeta,
-    eff, nabla,
-    BP
+    gibbs,
+    eff, 
+    Deff,
+    Dh,
+    DH,
+    phi,
+    flow
 });
 
