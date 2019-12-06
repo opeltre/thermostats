@@ -1,10 +1,8 @@
 let __ = require('@opeltre/math');
 
-//---------------------------------------------------------------
+let S = {};
 
 //-------- logic --------
-
-let S = {cell, chain};
 
 let arrEq = 
     ([i, ...is], [j, ...js]) => S.eq(i, j)
@@ -50,48 +48,8 @@ S.sub =
 S.sup = 
     (a, b) => S.geq(a, b) && !S.eq(a, b);
 
-// used ?
-S.max = 
-    as => as.filter(
-        a => !as.filter(b => S.sub(a, b)).length
-    );
 
-//-------- sub-orders --------
-
-S.cone = 
-    a => bs => 
-        bs.filter(b => S.geq(a, b));
-
-S.intercone = 
-    (a, c) => bs => 
-        bs.filter(b => S.geq(a, b) && !S.geq(c, b));
-
-S.interval = 
-    (a, c) => bs => 
-        bs.filter(b => S.geq(a, b) && S.geq(b, c));
-
-let last = 
-    arr => arr[arr.length - 1]
-
-let nerve = 
-    N => last(N).length
-        ? nerve([
-            ...N, 
-            last(N)
-                .map(
-                    ch => N[0]
-                        .filter(([a]) => S.sup(last(ch), a))
-                        .map(([a]) => [...ch, a])
-                )
-                .reduce((xs, ys) => [...xs, ...ys])
-        ])
-        : N.slice(0, N.length - 1);
-
-S.nerve = 
-    as => nerve(as.map(a => [a]));
-
-S.face = 
-    k => ch => [...ch.slice(0, k), ...ch.slice(k + 1)];
+//-------- cap-closure --------
 
 S.closure = 
     as => as.length
@@ -107,5 +65,46 @@ S.closure =
             ))
         ]
         : [];
+
+//-------- sub-orders --------
+
+S.cone = 
+    a => bs => 
+        bs.filter(b => S.geq(a, b));
+
+S.intercone = 
+    (a, c) => bs => 
+        bs.filter(b => S.geq(a, b) && !S.geq(c, b));
+
+S.interval = 
+    (a, c) => bs => 
+        bs.filter(b => S.geq(a, b) && S.geq(b, c));
+
+
+
+//-------- nerve & chains --------
+
+S.face = 
+    k => ch => [...ch.slice(0, k), ...ch.slice(k + 1)];
+
+let last = 
+    arr => arr[arr.length - 1]
+        
+let nerve = 
+    N => last(N).length
+        ? nerve([
+            ...N, 
+            last(N)
+                .map(
+                    ch => N[0]
+                        .filter(([a]) => S.sup(last(ch), a))
+                        .map(([a]) => [...ch, a])
+                )
+                .reduce((xs, ys) => [...xs, ...ys])
+        ])
+        : N.slice(0, N.length - 1);
+
+S.nerve = 
+    as => nerve([as.map(a => [a])]);
 
 module.exports = S;
