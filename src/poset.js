@@ -1,6 +1,9 @@
 let __ = require('@opeltre/math');
 
-let S = {};
+let S =
+    ([i, ...is], ord) => typeof i !== 'undefined' 
+        ? S.cup(S(is), [i], ord) 
+        : [];
 
 //-------- logic --------
 
@@ -29,10 +32,6 @@ S.cup =
 S.diff = 
     (a, b) => a.filter(i => !S.in(i, b));
 
-S.filter = 
-    ([i, ...is], ord) => typeof i !== 'undefined' 
-        ? S.cup(S.filter(is), [i], ord) 
-        : [];
 
 //-------- order ----------
 
